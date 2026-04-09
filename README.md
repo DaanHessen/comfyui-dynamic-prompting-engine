@@ -58,8 +58,6 @@ Key Features:
 * **Resolution Pooling with Weights:** Automatically generate dataset-ready outputs and extract sizes via inline `--res` tagging. Use the **String with Resolution Pool** node to manage complex weighted pools like `50::1024x1024, 20::1216x832`.
 * **Seamless On-Node UI Preview:** Immediately see what you built! The node constructs a semi-transparent `Output` widget on its own surface post-execution to display the generated string and resolution choices locally. 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 ### Built With
 
 * [![Python][Python]][Python-url]
