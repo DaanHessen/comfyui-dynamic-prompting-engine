@@ -65,8 +65,6 @@ Key Features:
 * [![Python][Python]][Python-url]
 * [![JavaScript][JavaScript]][JavaScript-url]
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
@@ -88,16 +86,12 @@ Ensure you have a working installation of [ComfyUI](https://github.com/comfyanon
    ```
 3. Restart your ComfyUI terminal/server to automatically compile and serve the backend/frontend components.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 After installation, search your ComfyUI double-click menu for the `utils` category. You will find standard elements such as:
 - **Dynamic Template Prompt Builder**: Connect a seed. Type dynamic tags directly like `{subject}` into your template block. Watch new ports explicitly spawn on the node interface to pipe text arrays straight into it!
 - **String with Resolution Pool**: Merge multiline string descriptions with a stack of resolutions to automatically format text chunks identically to `1024x1024` randomness parameters inline.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -111,8 +105,6 @@ After installation, search your ComfyUI double-click menu for the `utils` catego
 - [x] Weighted Randomness Probability (`::`)
 
 See the [open issues](https://github.com/DaanHessen/comfyui-dynamic-prompting-engine/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -128,8 +120,6 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 ### Top contributors:
 
 <a href="https://github.com/DaanHessen/comfyui-dynamic-prompting-engine/graphs/contributors">
@@ -140,8 +130,6 @@ Don't forget to give the project a star! Thanks again!
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
 ## Contact
