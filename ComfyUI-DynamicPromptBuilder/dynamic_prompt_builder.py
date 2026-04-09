@@ -159,12 +159,27 @@ class DynamicPromptBuilder:
         width = 1408
         height = 1408
 
-        match_res = re.search(r'--res\s*([\d\s,xX]+)', result)
+        match_res = re.search(r'--res\s*([0-9xX:,\.\s]+)', result)
         if match_res:
             res_str = match_res.group(1)
             options = [o.strip() for o in res_str.split(',') if o.strip()]
             if options:
-                chosen_res = rng.choice(options)
+                weights = []
+                clean_opts = []
+                for opt in options:
+                    if "::" in opt:
+                        w_str, val = opt.split("::", 1)
+                        try:
+                            weights.append(float(w_str.strip()))
+                            clean_opts.append(val.strip())
+                        except ValueError:
+                            weights.append(1.0)
+                            clean_opts.append(opt)
+                    else:
+                        weights.append(1.0)
+                        clean_opts.append(opt)
+                
+                chosen_res = rng.choices(clean_opts, weights=weights, k=1)[0]
                 parts = re.split(r'[xX]', chosen_res)
                 if len(parts) == 2:
                     try:
@@ -173,7 +188,7 @@ class DynamicPromptBuilder:
                     except ValueError:
                         pass
             
-            result = re.sub(r'\s*--res\s*[\d\s,xX]+', '', result)
+            result = re.sub(r'\s*--res\s*[0-9xX:,\.\s]+', '', result)
 
         result = re.sub(r'\s+', ' ', result).strip()
                 

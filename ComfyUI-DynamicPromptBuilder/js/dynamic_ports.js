@@ -31,7 +31,9 @@ app.registerExtension({
                                     p = p.split("::").slice(1).join("::");
                                 }
                                 p = p.trim();
-                                if (p) variables.add(p);
+                                if (p && !p.match(/^__[a-zA-Z0-9_\-]+__$/)) {
+                                    variables.add(p);
+                                }
                             }
                         }
 

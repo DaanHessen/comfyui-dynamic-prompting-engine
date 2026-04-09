@@ -63,10 +63,10 @@ Generating complex, varied datasets and exploring latent spaces requires robust 
 Key Features:
 * **Dynamic Node Sockets:** Wrap `{any_word}` in curly brackets in the main template string and the node instantly spawns a matching text input port for you to connect external strings.
 * **Nested Randomness (Pipes):** Use `{A|B|C}` notation to randomize broader categories in the master template before randomly selecting lines from those chosen categories.
-* **Weighted Probabilities:** Scale your pipe branches easily using the double colon syntax `{10::A|1::B}` to make choice A ten times more likely to roll! 
+* **Weighted Probabilities:** Scale your pipe branches or resolution lists easily using the double colon syntax `{10::A|1::B}` or `10::1024x1024` to make choice A ten times more likely to roll! Works in both the main template and the resolution pool.
 * **Multi-Selection Generation:** Need exactly three randomized inputs from the same variable block? Prefix the category with money signs `{3$$ red | green | blue | black}` to securely spawn "red, black, green" directly onto one string without duplicates. 
-* **Direct Wildcards (`__text__`):** Seamlessly scan your local `wildcards` folder! Adding `__clothing__` natively bypasses node-socket generation and instead parses lines directly out of `clothing.txt` line-by-line off your hard drive. 
-* **Resolution Pooling:** Automatically generate dataset-ready outputs and extract sizes via inline `--res` tagging directly into your generation loop without requiring extra Nodes. 
+* **Direct Wildcards (`__text__`):** Seamlessly scan your local `wildcards` folder! Adding `__clothing__` natively bypasses node-socket generation and instead parses lines directly out of `clothing.txt` line-by-line off your hard drive. Supports nested wildcards up to 5 levels deep.
+* **Resolution Pooling with Weights:** Automatically generate dataset-ready outputs and extract sizes via inline `--res` tagging. Use the **String with Resolution Pool** node to manage complex weighted pools like `50::1024x1024, 20::1216x832`.
 * **Seamless On-Node UI Preview:** Immediately see what you built! The node constructs a semi-transparent `Output` widget on its own surface post-execution to display the generated string and resolution choices locally. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
