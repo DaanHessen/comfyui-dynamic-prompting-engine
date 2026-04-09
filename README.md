@@ -62,8 +62,12 @@ Generating complex, varied datasets and exploring latent spaces requires robust 
 
 Key Features:
 * **Dynamic Node Sockets:** Wrap `{any_word}` in curly brackets in the main template string and the node instantly spawns a matching text input port for you to connect external strings.
-* **Nested Randomness (Pipes):** Use `{A|B|C}` notation to randomize broader categories in the master template before randomly selecting lines from those chosen categories. 
-* **Resolution Pooling:** Automatically generate dataset-ready outputs and extract output sizes directly via inline `--res` tagging, completely bypassing the need for manual node combinations. 
+* **Nested Randomness (Pipes):** Use `{A|B|C}` notation to randomize broader categories in the master template before randomly selecting lines from those chosen categories.
+* **Weighted Probabilities:** Scale your pipe branches easily using the double colon syntax `{10::A|1::B}` to make choice A ten times more likely to roll! 
+* **Multi-Selection Generation:** Need exactly three randomized inputs from the same variable block? Prefix the category with money signs `{3$$ red | green | blue | black}` to securely spawn "red, black, green" directly onto one string without duplicates. 
+* **Direct Wildcards (`__text__`):** Seamlessly scan your local `wildcards` folder! Adding `__clothing__` natively bypasses node-socket generation and instead parses lines directly out of `clothing.txt` line-by-line off your hard drive. 
+* **Resolution Pooling:** Automatically generate dataset-ready outputs and extract sizes via inline `--res` tagging directly into your generation loop without requiring extra Nodes. 
+* **Seamless On-Node UI Preview:** Immediately see what you built! The node constructs a semi-transparent `Output` widget on its own surface post-execution to display the generated string and resolution choices locally. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -112,7 +116,10 @@ After installation, search your ComfyUI double-click menu for the `utils` catego
 - [x] Basic string building using curly brackets
 - [x] Nested Randomness functionality (Piped inputs)
 - [x] Embedded Resolution Pool extraction
-- [ ] Direct wildcards integration (`__wildcard__`)
+- [x] Direct wildcards integration (`__wildcard__`)
+- [x] Multi-selection pooling (`$$`)
+- [x] Node-based text execution preview
+- [x] Weighted Randomness Probability (`::`)
 
 See the [open issues](https://github.com/DaanHessen/comfyui-dynamic-prompting-engine/issues) for a full list of proposed features (and known issues).
 
