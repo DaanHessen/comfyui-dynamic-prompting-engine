@@ -1,5 +1,39 @@
 import random
 import re
+import os
+import folder_paths
+
+class ResolutionPoolString:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+                "resolutions": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "apply_resolutions"
+    CATEGORY = "utils"
+
+    def apply_resolutions(self, text, resolutions):
+        res_lines = [r.strip() for r in resolutions.split('\n') if r.strip()]
+        if not res_lines:
+            return (text,)
+            
+        joined_res = ','.join(res_lines)
+        text_lines = text.split('\n')
+        
+        out_lines = []
+        for line in text_lines:
+            clean_line = line.strip()
+            if clean_line:
+                out_lines.append(f"{line} --res {joined_res}")
+            else:
+                out_lines.append(line)
+                
+        return ("\n".join(out_lines),)
 
 class DynamicPromptBuilder:
     @classmethod
@@ -23,37 +57,125 @@ class DynamicPromptBuilder:
         matches = set(re.findall(r'\{([^}]+)\}', template))
         
         for match in matches:
-            parts = [p for p in match.split('|') if p]
+            inner = match
+            sample_count = 1
+            if "$$" in inner:
+                count_str, inner_trimmed = inner.split("$$", 1)
+                try:
+                    sample_count = int(count_str.strip())
+                    inner = inner_trimmed
+                except ValueError:
+                    pass
+
+            parts = [p.strip() for p in inner.split('|') if p.strip()]
             if not parts:
                 result = result.replace(f"{{{match}}}", "")
                 continue
 
-            chosen_part = rng.choice(parts)
-            val = kwargs.get(chosen_part, "")
-            
-            if isinstance(val, str) and val.strip():
-                lines = [line.strip() for line in val.split("\n") if line.strip()]
-                if lines:
-                    chosen = rng.choice(lines)
-                    result = result.replace(f"{{{match}}}", chosen)
+            weights = []
+            clean_parts = []
+            for p in parts:
+                if "::" in p:
+                    w_str, val = p.split("::", 1)
+                    try:
+                        weights.append(float(w_str.strip()))
+                        clean_parts.append(val.strip())
+                    except ValueError:
+                        weights.append(1.0)
+                        clean_parts.append(p)
                 else:
-                    result = result.replace(f"{{{match}}}", chosen_part)
+                    weights.append(1.0)
+                    clean_parts.append(p)
+
+            chosen_items = []
+            pool = list(clean_parts)
+            w = list(weights)
+            k = min(sample_count, len(pool))
+            
+            for _ in range(k):
+                if sum(w) <= 0:
+                    break
+                chosen = rng.choices(pool, weights=w, k=1)[0]
+                idx = pool.index(chosen)
+                chosen_items.append(chosen)
+                pool.pop(idx)
+                w.pop(idx)
+            
+            final_replacements = []
+            for c_part in chosen_items:
+                val = kwargs.get(c_part, "")
+                if isinstance(val, str) and val.strip():
+                    lines = [line.strip() for line in val.split("\n") if line.strip()]
+                    if lines:
+                        final_replacements.append(rng.choice(lines))
+                    else:
+                        final_replacements.append(c_part)
+                else:
+                    final_replacements.append(c_part)
+            
+            if final_replacements:
+                replacement_str = ", ".join(final_replacements)
+                result = result.replace(f"{{{match}}}", replacement_str)
             else:
-                result = result.replace(f"{{{match}}}", chosen_part)
+                result = result.replace(f"{{{match}}}", "")
 
-        width = 1024
-        height = 1024
+        base_wildcards = os.path.join(folder_paths.base_path, "wildcards")
+        local_wildcards = os.path.join(os.path.dirname(os.path.realpath(__file__)), "wildcards")
 
-        match_w = re.search(r'--w\s+(\d+)', result)
-        if match_w:
-            width = int(match_w.group(1))
-            result = re.sub(r'\s*--w\s+\d+', '', result)
+        loop_count = 0
+        while loop_count < 5:
+            wildcard_matches = set(re.findall(r'__([a-zA-Z0-9_\-]+)__', result))
+            if not wildcard_matches:
+                break
+                
+            for w_match in wildcard_matches:
+                file_name = f"{w_match}.txt"
+                found_lines = []
+                
+                paths_to_check = [
+                    os.path.join(base_wildcards, file_name),
+                    os.path.join(local_wildcards, file_name)
+                ]
+                
+                for p in paths_to_check:
+                    if os.path.isfile(p):
+                        try:
+                            with open(p, 'r', encoding='utf-8') as f:
+                                lines = [line.strip() for line in f.readlines() if line.strip()]
+                                if lines:
+                                    found_lines = lines
+                                    break
+                        except Exception:
+                            pass
+                            
+                if found_lines:
+                    chosen_line = rng.choice(found_lines)
+                    result = result.replace(f"__{w_match}__", chosen_line)
+                else:
+                    result = result.replace(f"__{w_match}__", w_match)
+                    
+            loop_count += 1
 
-        match_h = re.search(r'--h\s+(\d+)', result)
-        if match_h:
-            height = int(match_h.group(1))
-            result = re.sub(r'\s*--h\s+\d+', '', result)
+        width = 1408
+        height = 1408
+
+        match_res = re.search(r'--res\s*([\d\s,xX]+)', result)
+        if match_res:
+            res_str = match_res.group(1)
+            options = [o.strip() for o in res_str.split(',') if o.strip()]
+            if options:
+                chosen_res = rng.choice(options)
+                parts = re.split(r'[xX]', chosen_res)
+                if len(parts) == 2:
+                    try:
+                        width = int(parts[0].strip())
+                        height = int(parts[1].strip())
+                    except ValueError:
+                        pass
+            
+            result = re.sub(r'\s*--res\s*[\d\s,xX]+', '', result)
 
         result = re.sub(r'\s+', ' ', result).strip()
                 
-        return (result, width, height)
+        preview_string = f"Prompt:\n{result}\n\nResolution: {width} x {height}"
+        return {"ui": {"text": [preview_string]}, "result": (result, width, height)}

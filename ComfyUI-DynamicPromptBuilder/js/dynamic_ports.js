@@ -1,4 +1,5 @@
 import { app } from "../../scripts/app.js";
+import { ComfyWidgets } from "../../scripts/widgets.js";
 
 app.registerExtension({
     name: "DynamicTemplatePromptBuilder",
@@ -20,9 +21,16 @@ app.registerExtension({
                         const variables = new Set();
                         let match;
                         while ((match = regex.exec(text)) !== null) {
-                            const inner = match[1];
+                            let inner = match[1];
+                            if (inner.includes("$$")) {
+                                inner = inner.split("$$").slice(1).join("$$");
+                            }
                             const parts = inner.split('|');
-                            for (const p of parts) {
+                            for (let p of parts) {
+                                if (p.includes("::")) {
+                                    p = p.split("::").slice(1).join("::");
+                                }
+                                p = p.trim();
                                 if (p) variables.add(p);
                             }
                         }
@@ -55,6 +63,50 @@ app.registerExtension({
                     setTimeout(() => {
                         updatePorts();
                     }, 10);
+                }
+            };
+
+            const onExecuted = nodeType.prototype.onExecuted;
+            nodeType.prototype.onExecuted = function (message) {
+                if (onExecuted) {
+                    onExecuted.apply(this, arguments);
+                }
+
+                if (message && message.text) {
+                    const text = message.text[0];
+                    let outputWidget = this.widgets.find(w => w.name === "Output");
+
+                    if (!outputWidget) {
+                        const w = ComfyWidgets["STRING"](this, "Output", ["STRING", { multiline: true }], app);
+                        outputWidget = w.widget || this.widgets.find(w => w.name === "Output");
+                        if (outputWidget && outputWidget.inputEl) {
+                            outputWidget.inputEl.readOnly = true;
+                            outputWidget.inputEl.style.opacity = 0.6;
+                        }
+                    }
+
+                    if (outputWidget) {
+                        outputWidget.value = text;
+                        if (outputWidget.inputEl) {
+                            outputWidget.inputEl.value = text;
+                        }
+                    }
+
+                    if (!this.flags?.collapsed) {
+                        const sz = this.computeSize();
+                        if (sz[0] < this.size[0]) {
+                            sz[0] = this.size[0];
+                        }
+                        if (sz[1] < this.size[1]) {
+                            sz[1] = this.size[1];
+                        }
+                        this.size = sz;
+                        if (this.onResize) {
+                            this.onResize(this.size);
+                        }
+                    }
+
+                    this.setDirtyCanvas(true, true);
                 }
             };
         }
