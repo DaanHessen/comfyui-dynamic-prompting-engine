@@ -6,22 +6,11 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/DaanHessen/comfyui-dynamic-prompting-engine">
-    <!-- Replace with actual logo if you have one! -->
-    <img src="https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfyui_screenshot.png" alt="Logo" width="400">
-  </a>
 
 <h3 align="center">ComfyUI Dynamic Prompting Engine</h3>
 
   <p align="center">
     A robust ComfyUI custom node suite for advanced string parsing, dynamic text inputs, nested randomness, and dynamic resolution pooling.
-    <br />
-    <a href="https://github.com/DaanHessen/comfyui-dynamic-prompting-engine"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/DaanHessen/comfyui-dynamic-prompting-engine/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
