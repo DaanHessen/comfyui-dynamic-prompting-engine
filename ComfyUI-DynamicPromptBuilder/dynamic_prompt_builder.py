@@ -11,7 +11,8 @@ class DynamicPromptBuilder:
             }
         }
 
-    RETURN_TYPES = ("STRING",)
+    RETURN_TYPES = ("STRING", "INT", "INT")
+    RETURN_NAMES = ("prompt", "width", "height")
     FUNCTION = "build_prompt"
     CATEGORY = "utils"
 
@@ -39,5 +40,20 @@ class DynamicPromptBuilder:
                     result = result.replace(f"{{{match}}}", chosen_part)
             else:
                 result = result.replace(f"{{{match}}}", chosen_part)
+
+        width = 1024
+        height = 1024
+
+        match_w = re.search(r'--w\s+(\d+)', result)
+        if match_w:
+            width = int(match_w.group(1))
+            result = re.sub(r'\s*--w\s+\d+', '', result)
+
+        match_h = re.search(r'--h\s+(\d+)', result)
+        if match_h:
+            height = int(match_h.group(1))
+            result = re.sub(r'\s*--h\s+\d+', '', result)
+
+        result = re.sub(r'\s+', ' ', result).strip()
                 
-        return (result,)
+        return (result, width, height)
